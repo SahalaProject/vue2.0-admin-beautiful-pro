@@ -95,7 +95,7 @@ instance.interceptors.response.use(
     console.log('91 request', response)
     console.log('92 request', codeVerificationArray.includes(response.status))
     if (codeVerificationArray.includes(response.status)) {  // 校验status 而不是 code
-      console.log('94 request成功', data)
+      console.log('94 request成功', data)  
       console.log('95 request成功', response)
       return response  // 返回原始 如果 data store中拿不到值，
       // return data

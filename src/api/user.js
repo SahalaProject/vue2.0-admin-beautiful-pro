@@ -7,7 +7,7 @@ export async function login(data) {
   //   data = await encryptedData(data) // mock中登录
   // }
   const resp = request({
-    url: '/login',
+    // url: '/login',
     url: '/api/user/login/',
     method: 'post',
     data,

@@ -363,8 +363,8 @@ export const asyncRoutes = [
   },
   {
     path: '/project',
+    redirect: '     ',
     component: Layout,
-    redirect: 'project',
     children: [
       {
         path: 'project',
@@ -372,6 +372,22 @@ export const asyncRoutes = [
         component: () => import('@/views/project/index'),
         meta: {
           title: '项目',
+          icon: 'home',
+        },
+      },
+    ],
+  },
+  {
+    path: '/report',
+    redirect: '     ',
+    component: Layout,
+    children: [
+      {
+        path: 'report',
+        name: 'Report',
+        component: () => import('@/views/report/index'),
+        meta: {
+          title: '报告',
           icon: 'home',
         },
       },

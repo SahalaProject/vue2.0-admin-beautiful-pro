@@ -55,6 +55,7 @@ const actions = {
     
     if (accessToken) {
       commit('setAccessToken', accessToken)
+      commit('setUsername', data.user)
       const hour = new Date().getHours()
       const thisTime =
         hour < 8
@@ -84,12 +85,12 @@ const actions = {
       return false
     }
     // 设定的固定的权限值
-    const data11 = {"permissions":["admin"],"username":"admin","avatar":"https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"}
+    const data11 = {"permissions":["admin"],"username": '用户名丢失啦每次刷新，接口获取',"avatar":"https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"}
     let { permissions, username, avatar } = data11
     // let { permissions, username, avatar } = data
     if (permissions && username && Array.isArray(permissions)) {
       commit('setPermissions', permissions)
-      commit('setUsername', username)
+      commit('setUsername', state.username)
       commit('setAvatar', avatar)
       return permissions
     } else {

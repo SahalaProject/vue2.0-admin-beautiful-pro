@@ -26,10 +26,11 @@ export function doDelete(data) {
 
 export function getProjectList() {
     console.log('28 getProjectList')
+    const params = {'is_not_page': 1}
   return request({
     // url: '/api/stl/reports',
     url: '/api/stl/project/',
     method: 'get',
-    data: {project: 1}
+    params,
   })
 }
