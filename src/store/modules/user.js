@@ -1,0 +1,114 @@
+/**
+ * @author chuzhixin 1204505056@qq.com （不想保留author可删除）
+ * @description 登录、获取用户信息、退出登录、清除accessToken逻辑，不建议修改
+ */
+
+import Vue from 'vue'
+import { getUserInfo, login, logout } from '@/api/user'
+import {
+  getAccessToken,
+  removeAccessToken,
+  setAccessToken,
+} from '@/utils/accessToken'
+import { resetRouter } from '@/router'
+import { title, tokenName } from '@/config'
+
+const state = () => ({
+  accessToken: getAccessToken(),
+  username: '',
+  avatar: '',
+  permissions: [],
+})
+const getters = {
+  accessToken: (state) => state.accessToken,
+  username: (state) => state.username,
+  avatar: (state) => state.avatar,
+  permissions: (state) => state.permissions,
+}
+const mutations = {
+  setAccessToken(state, accessToken) {
+    state.accessToken = accessToken
+    setAccessToken(accessToken)
+  },
+  setUsername(state, username) {
+    state.username = username
+  },
+  setAvatar(state, avatar) {
+    state.avatar = avatar
+  },
+  setPermissions(state, permissions) {
+    state.permissions = permissions
+  },
+}
+const actions = {
+  setPermissions({ commit }, permissions) {
+    commit('setPermissions', permissions)
+  },    
+  async login({ commit }, userInfo) {
+    console.log('store user 11111111111111 ', userInfo)
+    const { data } = await login(userInfo) // data 是request返回的原始response     
+    console.log('store user  22222222222222 :', data)
+
+    // const accessToken = data[tokenName]
+    const accessToken = data.token
+    console.log('store user  3333333333333 ', accessToken)
+    
+    if (accessToken) {
+      commit('setAccessToken', accessToken)
+      commit('setUsername', data.user)
+      const hour = new Date().getHours()
+      const thisTime =
+        hour < 8
+          ? '早上好'
+          : hour <= 11
+          ? '上午好'
+          : hour <= 13
+          ? '中午好'
+          : hour < 18
+          ? '下午好'
+          : '晚上好'
+      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`)
+    } else {
+      Vue.prototype.$baseMessage(
+        // `登录接口异常，未正确返回${tokenName}...`,
+        data.msg,
+        'error'
+      )
+    }
+  },
+
+  // 登录成功后立即拿到用户信息中权限，进行权限控制
+  async getUserInfo({ commit, state }) {
+    const { data } = await getUserInfo(state.accessToken)
+    console.log('82 store getUserInfo: ', data)
+    if (!data) {
+      Vue.prototype.$baseMessage('验证失败，请重新登录...', 'error')
+      return false
+    }
+    // 设定的固定的权限值
+    const data11 = {"permissions":["admin"],"username": '用户名丢失啦每次刷新，接口获取',"avatar":"https://i.gtimg.cn/club/item/face/img/8/15918_100.gif"}
+    let { permissions, username, avatar } = data11
+    // let { permissions, username, avatar } = data
+    if (permissions && username && Array.isArray(permissions)) {
+      commit('setPermissions', permissions)
+      // commit('setUsername', state.username)
+      commit('setUsername', data.results[0].responsible)
+      commit('setAvatar', avatar)
+      return permissions
+    } else {
+      Vue.prototype.$baseMessage('用户信息接口异常', 'error')
+      return false
+    }
+  },
+  async logout({ dispatch }) {
+    // await logout(state.accessToken)  // 无需发送登出请求，直接删除vue中的token和权限
+    await dispatch('resetAccessToken')
+    await resetRouter()
+  },
+  resetAccessToken({ commit }) {
+    commit('setPermissions', [])
+    commit('setAccessToken', '')
+    removeAccessToken()
+  },
+}
+export default { state, getters, mutations, actions }
