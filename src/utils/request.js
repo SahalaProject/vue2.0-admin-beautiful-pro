@@ -54,14 +54,14 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     if (store.getters['user/accessToken']) {
-      config.headers[tokenName] = store.getters['user/accessToken']
+      config.headers.Authorization = store.getters['user/accessToken'];
     }
     //这里会过滤所有为空、0、false的key，如果不需要请自行注释
-    if (config.data)
-      config.data = Vue.prototype.$baseLodash.pickBy(
-        config.data,
-        Vue.prototype.$baseLodash.identity
-      )
+    // if (config.data)
+    //   config.data = Vue.prototype.$baseLodash.pickBy(
+    //     config.data,
+    //     Vue.prototype.$baseLodash.identity
+    //   )
     if (
       config.data &&
       config.headers['Content-Type'] ===
@@ -69,12 +69,6 @@ instance.interceptors.request.use(
     )
     
       config.data = qs.stringify(config.data)
-    // 将token添加到url
-    console.log('wwwwwwwwwwwwwwwwwwwwwwww')
-    console.log(config.url)
-    if (!config.url.startsWith("/api/user/login")) {
-      config.url = config.url + "?token=" + store.getters['user/accessToken'];
-    }  
     if (debounce.some((item) => config.url.includes(item)))
       loadingInstance = Vue.prototype.$baseLoading()
     return config

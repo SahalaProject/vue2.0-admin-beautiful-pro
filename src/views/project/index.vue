@@ -117,7 +117,11 @@
 
       }
     },
-    created() {
+    // created() {
+    //   this.fetchData()
+    // },
+    // 当前项目由于路由设计特点，切换路由过程钩子中方法在路由变化时加载，否则出现路由变了请求未发送（除了首页、401、404、register、login）
+    activated() {  // 使用vue路由时再子路由间切换发现路由参数变换但请求不重发问题
       this.fetchData()
     },
     methods: {
